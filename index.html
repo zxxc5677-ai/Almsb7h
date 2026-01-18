@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المسبحة الذكية - Tasbih App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1e3c72;
+            --secondary-color: #2a5298;
+            --accent-color: #4CAF50;
+            --danger-color: #f44336;
+            --text-light: #f0f0f0;
+            --text-dark: #333;
+            --bg-light: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --bg-dark: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            --card-light: rgba(255, 255, 255, 0.85);
+            --card-dark: rgba(30, 30, 46, 0.7);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+            transition: var(--transition);
+            background-attachment: fixed;
+            padding-bottom: 80px;
+        }
+
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        body.english {
+            direction: ltr;
+            text-align: left;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* رأس الصفحة */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--card-light);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        body.dark-mode header {
+            background: var(--card-dark);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        body.dark-mode h1 {
+            color: var(--text-light);
+        }
+
+        /* الأقسام */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* قسم المسبحة */
+        .tasbih-container {
+            text-align: center;
+            padding: 30px;
+            background: var(--card-light);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        body.dark-mode .tasbih-container {
+            background: var(--card-dark);
+        }
+
+        .tasbih-selector {
+            margin-bottom: 25px;
+        }
+
+        .tasbih-selector label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--primary-color);
+        }
+
+        body.dark-mode .tasbih-selector label {
+            color: var(--text-light);
+        }
+
+        .tasbih-selector select {
+            padding: 12px 25px;
+            font-size: 1.2em;
+            border-radius: 25px;
+            border: 2px solid var(--primary-color);
+            background: var(--card-light);
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        body.dark-mode .tasbih-selector select {
+            background: var(--card-dark);
+            color: var(--text-light);
+        }
+
+        /* الزر الدائري */
+        .tasbih-circle-wrapper {
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tasbih-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .tasbih-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .tasbih-btn:active {
+            transform: scale(0.95);
+        }
+
+        .tasbih-number {
+            font-size: 3.5em;
+            font-weight: bold;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        /* مؤشر الصوت */
+        .voice-indicator {
+            margin: 20px 0;
+            padding: 15px 25px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 1em;
+            transition: var(--transition);
+            min-height: 60px;
+        }
+
+        body.dark-mode .voice-indicator {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .voice-indicator.listening {
+            background: rgba(76, 175, 80, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* أزرار التحكم */
+        .tasbih-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            box-shadow: var(--shadow);
+        }
+
+        .control-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .control-btn.danger {
+            background: var(--danger-color);
+        }
+
+        .control-btn.danger:hover {
+            background: #d32f2f;
+        }
+
+        /* عرض آخر ذكر */
+        .last-detected {
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: var(--text-dark);
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        body.dark-mode .last-detected {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-light);
+        }
+
+        /* قسم أذكاري */
+        .my-azkar-container {
+            background: var(--card-light);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        body.dark-mode .my-azkar-container {
+            background: var(--card-dark);
+        }
+
+        .my-azkar-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .my-azkar-header h2 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .my-azkar-header p {
+            color: var(--text-dark);
+            font-size: 0.95em;
+            opacity: 0.8;
+        }
+
+        body.dark-mode .my-azkar-header p {
+            color: var(--text-light);
+        }
+
+        .add-zekr-form {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        body.dark-mode .add-zekr-form {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        body.dark-mode .form-group label {
+            color: var(--text-light);
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            background: var(--card-light);
+            color: var(--text-dark);
+            font-size: 1em;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group textarea {
+            background: var(--card-dark);
+            color: var(--text-light);
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.3);
+        }
+
+        .add-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .my-azkar-list {
+            margin-top: 25px;
+        }
+
+        .zekr-item {
+            background: var(--card-light);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .zekr-item {
+            background: var(--card-dark);
+        }
+
+        .zekr-item:hover {
+            transform: translateX(-5px);
+        }
+
+        .zekr-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .zekr-text {
+            color: var(--text-light);
+        }
+
+        .zekr-date {
+            font-size: 0.8em;
+            color: #666;
+            font-style: italic;
+        }
+
+        body.dark-mode .zekr-date {
+            color: #aaa;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-dark);
+            opacity: 0.6;
+        }
+
+        body.dark-mode .empty-message {
+            color: var(--text-light);
+        }
+
+        /* شريط التنقل السفلي */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-light);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .bottom-nav {
+            background: var(--card-dark);
+        }
+
+        body.english .bottom-nav {
+            direction: ltr;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            color: var(--text-dark);
+        }
+
+        body.dark-mode .nav-item {
+            color: var(--text-light);
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+            transform: translateY(-5px);
+        }
+
+        .nav-item span:first-child {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .nav-item span:last-child {
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+
+        /* زر تبديل اللغة */
+        .language-toggle {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .language-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        /* تحسينات الموبايل */
+        @media (max-width: 768px) {
+            .tasbih-container {
+                padding: 20px;
+            }
+
+            .tasbih-btn {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .tasbih-number {
+                font-size: 3em;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .language-toggle {
+                right: 10px;
+                top: 10px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- زر تبديل اللغة -->
+    <button class="language-toggle" onclick="toggleLanguage()">🇺🇸 EN</button>
+
+    <div class="container">
+        <!-- رأس الصفحة -->
+        <header>
+            <h1 data-ar="📿 المسبحة الذكية" data-en="📿 Smart Tasbih">📿 المسبحة الذكية</h1>
+            <p data-ar="التسبيح باللمس أو الصوت - التعرف الذكي" data-en="Tap or Voice Tasbih - Smart Recognition">التسبيح باللمس أو الصوت - التعرف الذكي</p>
+        </header>
+
+        <!-- قسم المسبحة -->
+        <div id="tasbih-section" class="content-section active">
+            <div class="tasbih-container">
+                <!-- اختيار الذكر -->
+                <div class="tasbih-selector">
+                    <label data-ar="اختر الذكر:" data-en="Select Dhikr:">اختر الذكر:</label>
+                    <select id="tasbihSelect" onchange="updateCurrentTasbih()">
+                        <option value="سبحان الله" data-ar="سبحان الله" data-en="Subhan Allah">سبحان الله</option>
+                        <option value="الحمد لله" data-ar="الحمد لله" data-en="Alhamdulillah">الحمد الله</option>
+                        <option value="لا إله إلا الله" data-ar="لا إله إلا الله" data-en="La ilaha illa Allah">لا إله إلا الله</option>
+                        <option value="الله أكبر" data-ar="الله أكبر" data-en="Allahu Akbar">الله أكبر</option>
+                        <option value="لا حول ولا قوة إلا بالله" data-ar="لا حول ولا قوة إلا بالله" data-en="La hawla wa la quwwata illa billah">لا حول ولا قوة إلا بالله</option>
+                        <option value="استغفر الله" data-ar="استغفر الله" data-en="Astaghfirullah">استغفر الله</option>
+                    </select>
+                </div>
+
+                <!-- الزر الدائري مع العداد -->
+                <div class="tasbih-circle-wrapper">
+                    <button class="tasbih-btn" onclick="incrementCounter()">
+                        <span class="tasbih-number" id="counter">0</span>
+                    </button>
+                </div>
+
+                <!-- مؤشر حالة الصوت -->
+                <div class="voice-indicator" id="voiceIndicator">
+                    <span>🎤</span>
+                    <span id="voiceStatus" data-ar="التسبيح الصوتي: معطل" data-en="Voice Tasbih: Disabled">التسبيح الصوتي: معطل</span>
+                </div>
+
+                <!-- أزرار التحكم -->
+                <div class="tasbih-controls">
+                    <button class="control-btn" id="voiceBtn" onclick="toggleVoice()">
+                        <span id="micIcon">🎤</span> <span data-ar="تفعيل الصوت" data-en="Enable Voice">تفعيل الصوت</span>
+                    </button>
+                    <button class="control-btn" onclick="resetCounter()">
+                        <span>🔄</span> <span data-ar="تصفير" data-en="Reset">تصفير</span>
+                    </button>
+                </div>
+
+                <!-- عرض آخر ذكر تم كشفه -->
+                <div class="last-detected" id="lastDetected">
+                    <span data-ar="آخر ذكر مستمع إليه: (لم يتم الكشف بعد)" data-en="Last detected: (Not yet detected)">آخر ذكر مستمع إليه: (لم يتم الكشف بعد)</span>
+                </div>
+
+                <!-- تعليمات الاستخدام -->
+                <div style="margin-top: 20px; padding: 15px; background: rgba(76, 175, 80, 0.1); border-radius: 10px; font-size: 0.85em;">
+                    <strong data-ar="🎯 طريقة التسبيح الصوتي:" data-en="🎯 How to use Voice Tasbih:">🎯 طريقة التسبيح الصوتي:</strong><br>
+                    <span data-ar="1. اضغط تفعيل الصوت 2. اختار الذكر 3. نطقه بوضوح" data-en="1. Enable Voice 2. Select Dhikr 3. Say it clearly">1. اضغط تفعيل الصوت 2. اختار الذكر 3. نطقه بوضوح</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم أذكاري -->
+        <div id="my-azkar-section" class="content-section">
+            <div class="my-azkar-container">
+                <div class="my-azkar-header">
+                    <h2 data-ar="📖 أذكاري" data-en="📖 My Azkar">📖 أذكاري</h2>
+                    <p data-ar="سجل أذكارك الخاصة وارجع لها في أي وقت" data-en="Save your personal azkar and access them anytime">سجل أذكارك الخاصة وارجع لها في أي وقت</p>
+                </div>
+
+                <!-- نموذج إضافة ذكر جديد -->
+                <div class="add-zekr-form">
+                    <div class="form-group">
+                        <label data-ar="الذكر:" data-en="Dhikr:">الذكر:</label>
+                        <textarea id="zekrText" rows="3" placeholder="أكتب ذكرك هنا..." data-ar-placeholder="أكتب ذكرك هنا..." data-en-placeholder="Write your dhikr here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label data-ar="مصدر/ملاحظة (اختياري):" data-en="Source/Note (optional):">مصدر/ملاحظة (اختياري):</label>
+                        <input type="text" id="zekrInfo" placeholder="مثال: رواه البخاري" data-ar-placeholder="مثال: رواه البخاري" data-en-placeholder="Eg: Narrated by Bukhari">
+                    </div>
+                    <button class="add-btn" onclick="addZekr()">
+                        <span data-ar="➕ إضافة الذكر" data-en="➕ Add Dhikr">➕ إضافة الذكر</span>
+                    </button>
+                </div>
+
+                <!-- قائمة الأذكار -->
+                <div class="my-azkar-list" id="myAzkarList">
+                    <div class="empty-message" data-ar="لم تضف أي أذكار بعد. ابدأ الآن!" data-en="No azkar added yet. Start now!">لم تضف أي أذكار بعد. ابدأ الآن!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم الإعدادات -->
+        <div id="settings-section" class="content-section">
+            <div class="tasbih-container">
+                <h2 data-ar="⚙️ الإعدادات" data-en="⚙️ Settings">⚙️ الإعدادات</h2>
+                
+                <div class="add-zekr-form">
+                    <div class="form-group">
+                        <label data-ar="الوضع المظلم:" data-en="Dark Mode:">الوضع المظلم:</label>
+                        <button class="control-btn" onclick="toggleTheme()">
+                            <span data-ar="🌙 تبديل الوضع" data-en="🌙 Toggle Theme">🌙 تبديل الوضع</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-ar="اللغة:" data-en="Language:">اللغة:</label>
+                        <button class="control-btn" onclick="toggleLanguage()">
+                            <span data-ar="🇺🇸 تغيير اللغة" data-en="🇸🇦 Change Language">🇺🇸 تغيير اللغة</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-ar="تصفير العداد:" data-en="Reset Counter:">تصفير العداد:</label>
+                        <button class="control-btn danger" onclick="resetCounter()">
+                            <span data-ar="🔄 تصفير" data-en="🔄 Reset">🔄 تصفير</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="showSection('tasbih')">
+            <span>📿</span>
+            <span data-ar="المسبحة" data-en="Tasbih">المسبحة</span>
+        </button>
+        <button class="nav-item" onclick="showSection('my-azkar')">
+            <span>📖</span>
+            <span data-ar="أذكاري" data-en="My Azkar">أذكاري</span>
+        </button>
+        <button class="nav-item" onclick="showSection('settings')">
+            <span>⚙️</span>
+            <span data-ar="الإعدادات" data-en="Settings">الإعدادات</span>
+        </button>
+    </nav>
+
+    <script>
+        // =================================================================
+        // متغيرات التطبيق
+        // =================================================================
+        let counter = 0;
+        let voiceEnabled = false;
+        let recognition = null;
+        let isDarkMode = false;
+        let currentLang = 'ar';
+        let currentTasbih = "سبحان الله";
+
+        // =================================================================
+        // تهيئة التطبيق
+        // =================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeVoiceRecognition();
+            loadSettings();
+            loadMyAzkar();
+        });
+
+        function initializeVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                console.warn("التعرف على الصوت غير مدعوم في هذا المتصفح");
+                const voiceBtn = document.getElementById('voiceBtn');
+                if (voiceBtn) {
+                    voiceBtn.disabled = true;
+                    document.getElementById('voiceStatus').textContent = getText('المتصفح لا يدعم التعرف على الصوت', 'Browser does not support speech recognition');
+                }
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.lang = 'ar-SA';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            
+            recognition.onresult = handleVoiceResult;
+            recognition.onerror = handleVoiceError;
+            recognition.onend = handleVoiceEnd;
+        }
+
+        function getText(arText, enText) {
+            return currentLang === 'ar' ? arText : enText;
+        }
+
+        function updateLanguage() {
+            document.querySelectorAll('[data-ar][data-en]').forEach(element => {
+                element.textContent = currentLang === 'ar' ? element.dataset.ar : element.dataset.en;
+            });
+            
+            // تحديث placeholder
+            document.querySelectorAll('input, textarea').forEach(element => {
+                if (element.dataset.arPlaceholder && element.dataset.enPlaceholder) {
+                    element.placeholder = currentLang === 'ar' ? element.dataset.arPlaceholder : element.dataset.enPlaceholder;
+                }
+            });
+
+            // تحديث direction
+            if (currentLang === 'ar') {
+                document.body.setAttribute('dir', 'rtl');
+                document.body.classList.remove('english');
+            } else {
+                document.body.setAttribute('dir', 'ltr');
+                document.body.classList.add('english');
+            }
+        }
+
+        function loadSettings() {
+            const savedLang = localStorage.getItem('appLang');
+            if (savedLang) {
+                currentLang = savedLang;
+                updateLanguage();
+                document.querySelector('.language-toggle').innerHTML = currentLang === 'ar' ? '🇺🇸 EN' : '🇸🇦 AR';
+            }
+
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (savedDarkMode) {
+                toggleTheme();
+            }
+            
+            const savedCounter = localStorage.getItem('tasbihCounter');
+            if (savedCounter) {
+                counter = parseInt(savedCounter);
+                document.getElementById('counter').textContent = counter;
+            }
+        }
+
+        // =================================================================
+        // دوال المسبحة
+        // =================================================================
+        function incrementCounter() {
+            counter++;
+            updateCounterDisplay();
+            saveCounter();
+            animateButton();
+        }
+
+        function updateCounterDisplay() {
+            const counterEl = document.getElementById('counter');
+            counterEl.textContent = counter;
+            
+            counterEl.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                counterEl.style.transform = 'scale(1)';
+            }, 100);
+            
+            if (counter % 33 === 0) {
+                counterEl.style.color = '#FF6B6B';
+                setTimeout(() => {
+                    counterEl.style.color = '#4CAF50';
+                }, 500);
+            }
+        }
+
+        function animateButton() {
+            const btn = document.querySelector('.tasbih-btn');
+            btn.style.background = 'var(--secondary-color)';
+            setTimeout(() => {
+                btn.style.background = 'var(--primary-color)';
+            }, 200);
+        }
+
+        function resetCounter() {
+            counter = 0;
+            document.getElementById('counter').textContent = counter;
+            saveCounter();
+        }
+
+        function saveCounter() {
+            localStorage.setItem('tasbihCounter', counter);
+        }
+
+        function updateCurrentTasbih() {
+            const select = document.getElementById('tasbihSelect');
+            currentTasbih = select.value;
+            document.getElementById('lastDetected').textContent = getText('آخر ذكر مستمع إليه: (لم يتم الكشف بعد)', 'Last detected: (Not yet detected)');
+        }
+
+        // =================================================================
+        // دوال التحكم بالصوت
+        // =================================================================
+        function toggleVoice() {
+            if (!recognition) {
+                alert(getText('التعرف على الصوت غير مدعوم في هذا المتصفح', 'Speech recognition is not supported in this browser'));
+                return;
+            }
+            
+            voiceEnabled = !voiceEnabled;
+            const voiceBtn = document.getElementById('voiceBtn');
+            const voiceIndicator = document.getElementById('voiceIndicator');
+            const voiceStatus = document.getElementById('voiceStatus');
+            
+            if (voiceEnabled) {
+                try {
+                    recognition.start();
+                    voiceBtn.innerHTML = `<span id="micIcon">⏹️</span> <span>${getText('إيقاف الصوت', 'Disable Voice')}</span>`;
+                    voiceBtn.classList.add('danger');
+                    voiceIndicator.classList.add('listening');
+                    voiceStatus.textContent = getText('جاري الاستماع... قل الذكر المختار بوضوح', 'Listening... say the selected dhikr clearly');
+                    document.getElementById('lastDetected').textContent = getText('آخر ذكر مستمع إليه: (في انتظار الكشف...)', 'Last detected: (Waiting for detection...)');
+                } catch (e) {
+                    console.error('Error starting recognition:', e);
+                    voiceEnabled = false;
+                }
+            } else {
+                recognition.stop();
+                voiceBtn.innerHTML = `<span id="micIcon">🎤</span> <span>${getText('تفعيل الصوت', 'Enable Voice')}</span>`;
+                voiceBtn.classList.remove('danger');
+                voiceIndicator.classList.remove('listening');
+                voiceStatus.textContent = getText('التسبيح الصوتي: معطل', 'Voice Tasbih: Disabled');
+                document.getElementById('lastDetected').textContent = getText('آخر ذكر مستمع إليه: (التسجيل متوقف)', 'Last detected: (Recording stopped)');
+            }
+        }
+
+        function handleVoiceResult(event) {
+            const lastResult = event.results[event.results.length - 1];
+            if (lastResult.isFinal) {
+                const transcript = lastResult[0].transcript.trim();
+                processVoiceCommand(transcript);
+            }
+        }
+
+        function processVoiceCommand(transcript) {
+            document.getElementById('lastDetected').textContent = `${getText('آخر ذكر مستمع إليه:', 'Last detected:')} "${transcript}"`;
+            
+            const tasbihKeywords = {
+                'سبحان الله': ['سبحان الله', 'سبحانلله', 'سبحان', 'سبحان الله العظيم', 'سبحانالله'],
+                'الحمد لله': ['الحمد لله', 'الحمدلله', 'الحمد', 'الحمد لله رب العالمين', 'الحمدلله'],
+                'لا إله إلا الله': ['لا إله إلا الله', 'لا اله الا الله', 'لا إله', 'لا إله إلا الله وحده'],
+                'الله أكبر': ['الله أكبر', 'الله اكبر', 'أكبر', 'الله أكبر ولله الحمد', 'الله'],
+                'لا حول ولا قوة إلا بالله': ['لا حول', 'لا قوة', 'حول', 'قوة', 'لا حول ولا قوة'],
+                'استغفر الله': ['استغفر', 'أستغفر', 'استغفر الله', 'اللهم استغفر', 'أستغفر الله']
+            };
+            
+            const selectedKeywords = tasbihKeywords[currentTasbih];
+            const isMatch = selectedKeywords.some(keyword => 
+                transcript.toLowerCase().includes(keyword.toLowerCase())
+            );
+            
+            if (isMatch) {
+                incrementCounter();
+                flashSuccess();
+            }
+        }
+
+        function flashSuccess() {
+            const indicator = document.getElementById('voiceIndicator');
+            indicator.style.background = 'rgba(76, 175, 80, 0.5)';
+            setTimeout(() => {
+                indicator.style.background = '';
+            }, 300);
+        }
+
+        function handleVoiceError(event) {
+            console.error('خطأ في التعرف على الصوت:', event.error);
+            voiceEnabled = false;
+            toggleVoice();
+            
+            let errorMessage = getText('❌ حدث خطأ:', '❌ Error:');
+            switch(event.error) {
+                case 'no-speech':
+                    errorMessage += getText(' لم يتم الكشف عن صوت', ' No speech detected');
+                    break;
+                case 'audio-capture':
+                    errorMessage += getText(' لا يمكن الوصول للميكروفون', ' Cannot access microphone');
+                    break;
+                case 'not-allowed':
+                    errorMessage += getText(' تم رفض إذن الميكروفون', ' Microphone permission denied');
+                    break;
+                case 'network':
+                    errorMessage += getText(' مشكلة في الاتصال', ' Network error');
+                    break;
+                default:
+                    errorMessage += ' ' + event.error;
+            }
+            
+            document.getElementById('voiceStatus').textContent = errorMessage;
+            document.getElementById('lastDetected').textContent = getText('آخر ذكر مستمع إليه: (خطأ في التسجيل)', 'Last detected: (Recording error)');
+        }
+
+        function handleVoiceEnd() {
+            if (voiceEnabled) {
+                setTimeout(() => {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error('Error restarting recognition:', e);
+                    }
+                }, 100);
+            }
+        }
+
+        // =================================================================
+        // دوال التنقل
+        // =================================================================
+        function showSection(sectionName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (sectionName === 'tasbih') {
+                document.getElementById('tasbih-section').classList.add('active');
+                document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+                if (voiceEnabled) {
+                    toggleVoice(); // إيقاف الصوت عند الخروج
+                }
+            } else if (sectionName === 'my-azkar') {
+                document.getElementById('my-azkar-section').classList.add('active');
+                document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+                if (voiceEnabled) {
+                    toggleVoice(); // إيقاف الصوت عند الخروج
+                }
+                loadMyAzkar();
+            } else if (sectionName === 'settings') {
+                document.getElementById('settings-section').classList.add('active');
+                document.querySelector('.nav-item:nth-child(3)').classList.add('active');
+                if (voiceEnabled) {
+                    toggleVoice(); // إيقاف الصوت عند الخروج
+                }
+            }
+        }
+
+        // =================================================================
+        // دوال أذكاري
+        // =================================================================
+        function addZekr() {
+            const text = document.getElementById('zekrText').value.trim();
+            const info = document.getElementById('zekrInfo').value.trim();
+            
+            if (!text) {
+                alert(getText('❌ يرجى كتابة الذكر أولاً!', '❌ Please write the dhikr first!'));
+                return;
+            }
+
+            const zekr = {
+                id: Date.now(),
+                text: text,
+                info: info,
+                date: new Date().toLocaleDateString(currentLang === 'ar' ? 'ar-SA' : 'en-US')
+            };
+
+            let myAzkar = JSON.parse(localStorage.getItem('myAzkar') || '[]');
+            myAzkar.unshift(zekr);
+            localStorage.setItem('myAzkar', JSON.stringify(myAzkar));
+
+            document.getElementById('zekrText').value = '';
+            document.getElementById('zekrInfo').value = '';
+
+            loadMyAzkar();
+            alert(getText('✅ تمت إضافة الذكر بنجاح!', '✅ Dhikr added successfully!'));
+        }
+
+        function loadMyAzkar() {
+            const myAzkar = JSON.parse(localStorage.getItem('myAzkar') || '[]');
+            const listContainer = document.getElementById('myAzkarList');
+            
+            if (myAzkar.length === 0) {
+                listContainer.innerHTML = `<div class="empty-message">${getText('لم تضف أي أذكار بعد. ابدأ الآن!', 'No azkar added yet. Start now!')}</div>`;
+                return;
+            }
+
+            listContainer.innerHTML = myAzkar.map(zekr => `
+                <div class="zekr-item">
+                    <div class="zekr-text">${zekr.text}</div>
+                    <div class="zekr-date">${zekr.info ? zekr.info + ' - ' : ''}${zekr.date}</div>
+                    <button class="delete-btn" onclick="deleteZekr(${zekr.id})">${getText('حذف', 'Delete')}</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteZekr(id) {
+            if (confirm(getText('هل تريد حذف هذا الذكر؟', 'Are you sure you want to delete this dhikr?'))) {
+                let myAzkar = JSON.parse(localStorage.getItem('myAzkar') || '[]');
+                myAzkar = myAzkar.filter(zekr => zekr.id !== id);
+                localStorage.setItem('myAzkar', JSON.stringify(myAzkar));
+                loadMyAzkar();
+                alert(getText('✅ تم الحذف', '✅ Deleted'));
+            }
+        }
+
+        // =================================================================
+        // دوال عامة
+        // =================================================================
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            updateLanguage();
+            localStorage.setItem('appLang', currentLang);
+            document.querySelector('.language-toggle').innerHTML = currentLang === 'ar' ? '🇺🇸 EN' : '🇸🇦 AR';
+            
+            // إعادة تحميل أذكاري إذا كانت مفتوحة
+            if (document.getElementById('my-azkar-section').classList.contains('active')) {
+                loadMyAzkar();
+            }
+        }
+
+        // دعم لوحة المفاتيح
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('tasbih-section').classList.contains('active')) {
+                switch(event.code) {
+                    case 'Space':
+                        event.preventDefault();
+                        incrementCounter();
+                        break;
+                    case 'KeyR':
+                        resetCounter();
+                        break;
+                    case 'KeyV':
+                        toggleVoice();
+                        break;
+                }
+            }
+        });
+
+        // منع اهتزاز الجوال عند الضغط
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.classList.contains('tasbih-btn')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
